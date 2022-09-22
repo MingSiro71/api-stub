@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  server:
+    build: ./infra/server
+    volumes:
+      - "./build/server:/app"
+    ports:
+      - "8080:80"
+    command: "/app/server || exit 0"
+    tty: true
+  golang:
+    build: ./infra/golang
+    volumes:
+      - "./build/server:/go/build"
+      - "./src/app:/go/src"
+    ports:
+      - "3080:80"
+    tty: true
+  redis:
+    build: ./infra/redis
+    expose:
+      - "6379"
