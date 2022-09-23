@@ -1,35 +1,26 @@
 package main
 
 import (
-  "os"
-  "io/ioutil"
-  "fmt"
+  // "os"
   "net/http"
   // "bytes"
-  // "api_stub/controllers"
+  "github.com/gorilla/mux"
+  "api_stub/controllers"
 )
 
-type String string
-
-func (s String) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-  b, err := ioutil.ReadAll(r.Body)
-  std := os.Stdout
-  if err != nil {
-    fmt.Fprint(std, "can not read request body")  
-  }
-  fmt.Fprint(std, string(b))
-  fmt.Fprint(std, string(r.URL.Path))
-  fmt.Fprint(std, string(r.URL.RawQuery))
-  fmt.Fprint(std, string(r.Method))
-}
-
 func main() {
-  // controller := controllers.NewMainController()
-  http.Handle("/", String("Hello World."))
-  // http.HandleFunc("/set", controller.Set)
-  // http.HandleFunc("/get", controller.get)
-  // http.HandleFunc("/list", controller.list)
-  // http.HandleFunc("/clear", controller.clear)
+  router := mux.NewRouter()
+  controller := controllers.NewMainController()
+
+  router.HandleFunc("/set/{id}", controller.Set).Methods("POST")
+  router.HandleFunc("/get/{id}", controller.Get)
+  // router.HandleFunc("/list/{id}", controller.List).Methods("GET")
+  // router.HandleFunc("/clear/{id}", controller.Clear).Methods("PUT")
+  // router.HandleFunc("/init", controller.Init).Methods("PUT")
+  router.HandleFunc("/", controller.Help).Methods("GET")
+
+  // register router
+  http.Handle("/", router)
 
   // start server with reverse proxy
   // http.ListenAndServe("localhost:8080", nil)
