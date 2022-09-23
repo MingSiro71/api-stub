@@ -1,14 +1,14 @@
 package controllers
 
 import (
-	"fmt"
-	"errors"
-	"strings"
-	"strconv"
-	"net/http"
 	"encoding/json"
-	"github.com/gorilla/mux"
+	"errors"
+	"fmt"
 	"github.com/go-redis/redis/v9"
+	"github.com/gorilla/mux"
+	"net/http"
+	"strconv"
+	"strings"
 )
 
 func InitParam(r *http.Request) (map[string]interface{}, error) {
@@ -28,10 +28,10 @@ func InitParam(r *http.Request) (map[string]interface{}, error) {
 
 func InitRedis(h string, p int, pw string, dbId int) *redis.Client {
 	addr := strings.Join([]string{h, ":", strconv.Itoa(p)}, "")
- 	redis := redis.NewClient(&redis.Options{
-		Addr: addr,
+	redis := redis.NewClient(&redis.Options{
+		Addr:     addr,
 		Password: pw,
-		DB: dbId,
+		DB:       dbId,
 	})
 
 	return redis
@@ -39,8 +39,8 @@ func InitRedis(h string, p int, pw string, dbId int) *redis.Client {
 
 func ShowError(w http.ResponseWriter, m string) {
 	e := map[string]string{
-        "error": m,
-    }
+		"error": m,
+	}
 	bytes, _ := json.Marshal(e)
 	j := string(bytes)
 

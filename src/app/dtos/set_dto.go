@@ -1,8 +1,8 @@
 package dtos
 
 import (
-	"api_stub/vo"
 	"api_stub/dtos/validations"
+	"api_stub/vo"
 )
 
 type SetDto interface {
@@ -11,7 +11,7 @@ type SetDto interface {
 }
 
 type setDto struct {
-	id vo.Id
+	id   vo.Id
 	data string
 }
 

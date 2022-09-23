@@ -9,7 +9,7 @@ type getPresenter struct {
 	w http.ResponseWriter
 }
 
-func NewGetPresenter(w http.ResponseWriter) (*getPresenter) {
+func NewGetPresenter(w http.ResponseWriter) *getPresenter {
 	return &getPresenter{w: w}
 }
 

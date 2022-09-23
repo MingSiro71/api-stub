@@ -8,7 +8,7 @@ import (
 
 type SetUsecase struct {
 	repos map[string]interface{}
-	out outputs.SetOutput
+	out   outputs.SetOutput
 }
 
 func NewSetUsecase(repos map[string]interface{}, out outputs.SetOutput) *SetUsecase {

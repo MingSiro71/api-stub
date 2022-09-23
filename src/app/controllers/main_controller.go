@@ -1,17 +1,17 @@
 package controllers
 
 import (
-	"context"
-	"net/http"
-	"io/ioutil"
-	"api_stub/env"
 	"api_stub/dtos"
+	"api_stub/env"
 	"api_stub/inputs"
 	"api_stub/outputs"
-	"api_stub/usecases"
 	"api_stub/presenters"
-	"api_stub/repositories"
 	"api_stub/redis_repositories"
+	"api_stub/repositories"
+	"api_stub/usecases"
+	"context"
+	"io/ioutil"
+	"net/http"
 )
 
 type MainController interface {
@@ -22,8 +22,8 @@ type MainController interface {
 	// Clear(http.ResponseWriter, *http.Request)
 	// Init(http.ResponseWriter, *http.Request)
 }
-  
-type mainController struct {  
+
+type mainController struct {
 }
 
 func NewMainController() (m *mainController) {
@@ -70,7 +70,7 @@ func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
 		ShowError(w, "internal server error.")
 	}
 }
-  
+
 func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
@@ -87,7 +87,7 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 		ShowError(w, err.Error())
 		return
 	}
-	
+
 	err = in.Handle(dto)
 	if err != nil {
 		ShowError(w, "internal server error.")
@@ -97,7 +97,7 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 // func (mc *mainController) List(w http.ResponseWriter, r *http.Request) {
 // 	var out ListOutput
 // 	out = NewListPresenter(w)
-	
+
 // 	var in ListInput
 // 	in = NewMainUsecase(out)
 
@@ -105,14 +105,14 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 // 	if err != nil {
 // 		w.write("parameters not validated")
 // 	}
-	
+
 // 	in.List(dto)
 // }
 
 // func (mc *mainController) Clear(w http.ResponseWriter, r *http.Request) {
 // 	var out ClearOutput
 // 	out = NewClearPresenter(w)
-	
+
 // 	var in ClearInput
 // 	in = NewMainUsecase(out)
 
@@ -120,19 +120,19 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 // 	if err != nil {
 // 		w.write("parameters not validated")
 // 	}
-	
+
 // 	in.Clear(dto)
 // }
 
 // func (mc *mainController) Init(w http.ResponseWriter, r *http.Request) {
 // 	var out InitOutput
 // 	out = NewRegisterPresenter(w)
-	
+
 // 	var in InitInput
 // 	in = NewMainUsecase(out)
 
 // 	dto, err := NewInitrDto()
-// 	// No paramater and validation 
+// 	// No paramater and validation
 
 // 	in.Init(dto)
 // }

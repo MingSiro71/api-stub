@@ -1,15 +1,15 @@
 package usecases
 
 import (
-	"github.com/go-redis/redis/v9"
 	"api_stub/dtos"
 	"api_stub/outputs"
 	"api_stub/repositories"
+	"github.com/go-redis/redis/v9"
 )
 
 type GetUsecase struct {
 	repos map[string]interface{}
-	out outputs.GetOutput
+	out   outputs.GetOutput
 }
 
 func NewGetUsecase(repos map[string]interface{}, out outputs.GetOutput) *GetUsecase {

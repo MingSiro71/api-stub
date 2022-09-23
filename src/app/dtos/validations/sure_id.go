@@ -1,9 +1,9 @@
 package validations
 
 import (
+	"api_stub/vo"
 	"errors"
 	"reflect"
-	"api_stub/vo"
 )
 
 func GetSureId(params map[string]interface{}) (vo.Id, error) {

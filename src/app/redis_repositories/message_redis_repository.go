@@ -1,18 +1,18 @@
 package redis_repositories
 
 import (
-	"context"
-	"github.com/go-redis/redis/v9"
 	"api_stub/repositories"
 	"api_stub/vo"
+	"context"
+	"github.com/go-redis/redis/v9"
 )
 
 type redisMessageRepository struct {
 	ctx context.Context
-	db *redis.Client
+	db  *redis.Client
 }
 
-func NewRedisMessageRepository(ctx context.Context, db *redis.Client) repositories.MessageRepository{
+func NewRedisMessageRepository(ctx context.Context, db *redis.Client) repositories.MessageRepository {
 	return &redisMessageRepository{ctx: ctx, db: db}
 }
 

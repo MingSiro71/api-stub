@@ -10,10 +10,10 @@ type HelpPresenter interface {
 }
 
 type helpPresenter struct {
-	w http.ResponseWriter 
+	w http.ResponseWriter
 }
 
-func NewHelpPresenter(w http.ResponseWriter) (*helpPresenter) {
+func NewHelpPresenter(w http.ResponseWriter) *helpPresenter {
 	return &helpPresenter{w: w}
 }
 
