@@ -5,5 +5,5 @@ import (
 )
 
 type SetInput interface {
-	Handle(dtos.SetDto)
+	Handle(dtos.SetDto) error
 }

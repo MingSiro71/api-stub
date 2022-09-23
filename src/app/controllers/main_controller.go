@@ -1,14 +1,17 @@
 package controllers
 
 import (
-	// "fmt"
+	"context"
 	"net/http"
 	"io/ioutil"
+	"api_stub/env"
 	"api_stub/dtos"
 	"api_stub/inputs"
 	"api_stub/outputs"
 	"api_stub/usecases"
 	"api_stub/presenters"
+	"api_stub/repositories"
+	"api_stub/redis_repositories"
 )
 
 type MainController interface {
@@ -33,11 +36,14 @@ func (mc *mainController) Help(w http.ResponseWriter, r *http.Request) {
 }
 
 func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
-	var out outputs.SetOutput
-	out = presenters.NewRegisterPresenter(w)
-	
-	var in inputs.SetInput
-	in = usecases.NewSetUsecase(out)
+	ctx := context.Background()
+	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
+	repos := map[string]interface{}{
+		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
+	}
+
+	var out outputs.SetOutput = presenters.NewRegisterPresenter(w)
+	var in inputs.SetInput = usecases.NewSetUsecase(repos, out)
 
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -57,17 +63,23 @@ func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ShowError(w, "parameters not validated")
 		return
-	} else {
-		in.Handle(dto)
+	}
+
+	err = in.Handle(dto)
+	if err != nil {
+		ShowError(w, "internal server error")
 	}
 }
   
 func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
-	var out outputs.GetOutput
-	out = presenters.NewGetPresenter(w)
-	
-	var in inputs.GetInput
-	in = usecases.NewGetUsecase(out)
+	ctx := context.Background()
+	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
+	repos := map[string]interface{}{
+		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
+	}
+
+	var out outputs.GetOutput = presenters.NewGetPresenter(w)
+	var in inputs.GetInput = usecases.NewGetUsecase(repos, out)
 
 	params, err := InitParam(r)
 	dto, err := dtos.NewQueryDto(params)
@@ -76,7 +88,10 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	in.Handle(dto)
+	err = in.Handle(dto)
+	if err != nil {
+		ShowError(w, "internal server error")
+	}
 }
 
 // func (mc *mainController) List(w http.ResponseWriter, r *http.Request) {

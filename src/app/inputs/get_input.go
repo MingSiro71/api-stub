@@ -5,5 +5,5 @@ import (
 )
 
 type GetInput interface {
-	Handle(dtos.QueryDto)
+	Handle(dtos.QueryDto) error
 }
