@@ -47,13 +47,13 @@ func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
 
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		ShowError(w, "parameters not validated")
+		ShowError(w, "parameters not validated.")
 		return
 	}
 
 	params, err := InitParam(r)
 	if err != nil {
-		ShowError(w, "invalid url")
+		ShowError(w, "invalid url.")
 		return
 	}
 	params["data"] = string(b)
@@ -61,13 +61,13 @@ func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
 	dto, err := dtos.NewSetDto(params)
 
 	if err != nil {
-		ShowError(w, "parameters not validated")
+		ShowError(w, err.Error())
 		return
 	}
 
 	err = in.Handle(dto)
 	if err != nil {
-		ShowError(w, "internal server error")
+		ShowError(w, "internal server error.")
 	}
 }
   
@@ -84,13 +84,13 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 	params, err := InitParam(r)
 	dto, err := dtos.NewQueryDto(params)
 	if err != nil {
-		ShowError(w, "parameters not validated")
+		ShowError(w, err.Error())
 		return
 	}
 	
 	err = in.Handle(dto)
 	if err != nil {
-		ShowError(w, "internal server error")
+		ShowError(w, "internal server error.")
 	}
 }
 

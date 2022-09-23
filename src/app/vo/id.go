@@ -2,6 +2,7 @@ package vo
 
 import (
 	"errors"
+	"regexp"
 )
 
 type Id interface {
@@ -17,9 +18,9 @@ func NewDummyId() Id {
 }
 
 func NewId(s string) (Id, error) {
-	// validate s
-	if false {
-		return &id{value: ""}, errors.New("invalid paramater: id")
+	res := regexp.MustCompile(`[a-zA-Z0-9]{6,256}`).Match([]byte(s))
+	if res == false {
+		return &id{value: ""}, errors.New(`id should 6-256 length with number and alphabet, recomended "com.company@username"`)
 	}
 	return &id{value: s}, nil
 }
