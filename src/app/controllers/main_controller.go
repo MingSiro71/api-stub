@@ -4,6 +4,7 @@ import (
 	"api_stub/controllers/http_middlewares"
 	"api_stub/dtos"
 	"api_stub/env"
+	"api_stub/exceptions"
 	"api_stub/inputs"
 	"api_stub/outputs"
 	"api_stub/presenters"
@@ -49,26 +50,26 @@ func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
 
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		ShowError(w, "parameters not validated.", 400)
+		ShowError(w, exceptions.NewValidationException(exceptions.ValidationExceptionDefault))
 		return
 	}
 
 	params, err := InitParam(r)
 	if err != nil {
-		ShowError(w, "not found.", 404)
+		ShowError(w, exceptions.NewRoutingException(exceptions.RoutingExceptionDefault))
 		return
 	}
 	params["data"] = string(b)
 
 	dto, err := dtos.NewSetDto(params)
 	if err != nil {
-		ShowError(w, err.Error(), 400)
+		ShowError(w, err)
 		return
 	}
 
 	err = in.Handle(dto)
 	if err != nil {
-		ShowError(w, "internal server error.", 500)
+		ShowError(w, err)
 	}
 }
 
@@ -84,19 +85,19 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 
 	params, err := InitParam(r)
 	if err != nil {
-		ShowError(w, "not found.", 404)
+		ShowError(w, exceptions.NewRoutingException(exceptions.RoutingExceptionDefault))
 		return
 	}
 
 	dto, err := dtos.NewQueryDto(params)
 	if err != nil {
-		ShowError(w, err.Error(), 400)
+		ShowError(w, err)
 		return
 	}
 
 	err = in.Handle(dto)
 	if err != nil {
-		ShowError(w, "internal server error.", 500)
+		ShowError(w, err)
 	}
 }
 
@@ -112,20 +113,19 @@ func (mc *mainController) List(w http.ResponseWriter, r *http.Request) {
 
 	params, err := InitParam(r)
 	if err != nil {
-		ShowError(w, "not found.", 404)
+		ShowError(w, exceptions.NewRoutingException(exceptions.RoutingExceptionDefault))
 		return
 	}
 
 	dto, err := dtos.NewQueryDto(params)
 	if err != nil {
-		ShowError(w, err.Error(), 400)
+		ShowError(w, err)
 		return
 	}
 
 	err = in.Handle(dto)
 	if err != nil {
-		ShowError(w, "internal server error.", 500)
-		return
+		ShowError(w, err)
 	}
 }
 
@@ -141,26 +141,25 @@ func (mc *mainController) Clear(w http.ResponseWriter, r *http.Request) {
 
 	params, err := InitParam(r)
 	if err != nil {
-		ShowError(w, "not found.", 404)
+		ShowError(w, exceptions.NewRoutingException(exceptions.RoutingExceptionDefault))
 		return
 	}
 
 	dto, err := dtos.NewQueryDto(params)
 	if err != nil {
-		ShowError(w, err.Error(), 400)
+		ShowError(w, err)
 		return
 	}
 
 	err = in.Handle(dto)
 	if err != nil {
-		ShowError(w, "internal server error.", 500)
-		return
+		ShowError(w, err)
 	}
 }
 
 func (mc *mainController) Init(w http.ResponseWriter, r *http.Request) {
 	if mc.a.IsAdmin(r) == false {
-		ShowError(w, "not allowed for you.", 403)
+		ShowError(w, exceptions.NewAuthException(exceptions.AuthExceptionDefault))
 		return
 	}
 	ctx := context.Background()
@@ -174,7 +173,7 @@ func (mc *mainController) Init(w http.ResponseWriter, r *http.Request) {
 
 	err := in.Handle()
 	if err != nil {
-		ShowError(w, "internal server error.", 500)
+		ShowError(w, err)
 		return
 	}
 }

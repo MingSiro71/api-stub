@@ -1,21 +1,22 @@
 package validations
 
 import (
+	"api_stub/exceptions"
 	"api_stub/vo"
-	"errors"
 	"reflect"
 )
 
+const idKey = "id"
+
 func GetSureId(params map[string]interface{}) (vo.Id, error) {
-	key := "id"
-	v, exists := params[key]
+	v, exists := params[idKey]
 	if exists != true {
-		return vo.NewDummyId(), errors.New("id is required")
+		return vo.NewDummyId(), exceptions.NewValidationException(idKey + " is required")
 	}
 
 	ref := reflect.ValueOf(v)
 	if ref.Kind() != reflect.String {
-		return vo.NewDummyId(), errors.New("id should string")
+		return vo.NewDummyId(), exceptions.NewValidationException(idKey + "id should string")
 	}
 
 	p, err := vo.NewId(v.(string))

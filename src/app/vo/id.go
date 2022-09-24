@@ -1,7 +1,7 @@
 package vo
 
 import (
-	"errors"
+	"api_stub/exceptions"
 	"regexp"
 )
 
@@ -20,7 +20,7 @@ func NewDummyId() Id {
 func NewId(s string) (Id, error) {
 	res := regexp.MustCompile(`[a-zA-Z0-9]{6,256}`).Match([]byte(s))
 	if res == false {
-		return &id{value: ""}, errors.New(`id should 6-256 length with number and alphabet, recomended "com.company@username"`)
+		return &id{value: ""}, exceptions.NewValidationException(`id should 6-256 length with number and alphabet, recomended "com.company@username"`)
 	}
 	return &id{value: s}, nil
 }

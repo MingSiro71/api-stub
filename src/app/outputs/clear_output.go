@@ -6,5 +6,4 @@ import (
 
 type ClearOutput interface {
 	Success(vo.Id, int)
-	Error(string)
 }

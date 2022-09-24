@@ -6,5 +6,4 @@ import (
 
 type ListOutput interface {
 	Success(vo.Id, []string)
-	Error(string)
 }

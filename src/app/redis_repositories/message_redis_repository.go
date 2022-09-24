@@ -1,6 +1,7 @@
 package redis_repositories
 
 import (
+	"api_stub/exceptions"
 	"api_stub/repositories"
 	"api_stub/vo"
 	"context"
@@ -18,21 +19,33 @@ func NewRedisMessageRepository(ctx context.Context, db *redis.Client) repositori
 
 func (repo *redisMessageRepository) Push(id vo.Id, s string) error {
 	err := repo.db.RPush(repo.ctx, id.Tos(), s).Err()
-	return err
+	if err != nil {
+		return exceptions.NewDatabaseException(exceptions.DatabaseExceptionDefault)
+	}
+	return nil
 }
 
 func (repo *redisMessageRepository) Pop(id vo.Id) (string, error) {
 	val, err := repo.db.LPop(repo.ctx, id.Tos()).Result()
-	return string(val), err
+	if err != nil {
+		return "", exceptions.NewDatabaseException(exceptions.DatabaseExceptionDefault)
+	}
+	return string(val), nil
 }
 
 func (repo *redisMessageRepository) List(id vo.Id) ([]string, error) {
 	vals, err := repo.db.LRange(repo.ctx, id.Tos(), 0, RangeMax).Result()
-	return vals, err
+	if err != nil {
+		return make([]string, 0), exceptions.NewDatabaseException(exceptions.DatabaseExceptionDefault)
+	}
+	return vals, nil
 }
 
 func (repo *redisMessageRepository) Clear(id vo.Id) error {
 	_, err := repo.db.Del(repo.ctx, id.Tos()).Result()
+	if err != nil {
+		return exceptions.NewDatabaseException(exceptions.DatabaseExceptionDefault)
+	}
 	return err
 }
 
@@ -45,7 +58,7 @@ func (repo *redisMessageRepository) Init() error {
 		keys, cursor, err = repo.db.Scan(repo.ctx, cursor, "*", 10).Result()
 
 		if err != nil {
-			return err
+			return exceptions.NewDatabaseException(exceptions.DatabaseExceptionDefault)
 		}
 
 		ids = append(ids, keys...)
@@ -58,7 +71,7 @@ func (repo *redisMessageRepository) Init() error {
 	for _, id := range ids {
 		_, err := repo.db.Del(repo.ctx, id).Result()
 		if err != nil {
-			return err
+			return exceptions.NewDatabaseException(exceptions.DatabaseExceptionDefault)
 		}
 	}
 

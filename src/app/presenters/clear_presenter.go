@@ -20,7 +20,3 @@ func (p *clearPresenter) Success(id vo.Id, n int) {
 	bytes, _ := json.Marshal(res)
 	fmt.Fprint(p.w, string(bytes))
 }
-
-func (p *clearPresenter) Error(s string) {
-	ShowError(p.w, s, 500)
-}

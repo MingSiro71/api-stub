@@ -27,7 +27,3 @@ func (p *listPresenter) Success(id vo.Id, l []string) {
 	bytes, _ := json.Marshal(d)
 	fmt.Fprint(p.w, string(bytes))
 }
-
-func (p *listPresenter) Error(s string) {
-	ShowError(p.w, s, 500)
-}

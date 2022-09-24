@@ -1,20 +1,21 @@
 package validations
 
 import (
-	"errors"
+	"api_stub/exceptions"
 	"reflect"
 )
 
+const dataKey = "data"
+
 func GetSureData(params map[string]interface{}) (string, error) {
-	key := "data"
-	v, exists := params[key]
+	v, exists := params[dataKey]
 	if exists != true {
-		return "", errors.New("data is required")
+		return "", exceptions.NewValidationException(dataKey + " is required")
 	}
 
 	ref := reflect.ValueOf(v)
 	if ref.Kind() != reflect.String {
-		return "", errors.New("data should string")
+		return "", exceptions.NewValidationException(dataKey + " should string")
 	}
 
 	p := v.(string)

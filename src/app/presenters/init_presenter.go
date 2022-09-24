@@ -19,7 +19,3 @@ func (p *initPresenter) Success() {
 	bytes, _ := json.Marshal(res)
 	fmt.Fprint(p.w, string(bytes))
 }
-
-func (p *initPresenter) Error(s string) {
-	ShowError(p.w, s, 500)
-}

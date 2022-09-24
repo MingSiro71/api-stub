@@ -20,7 +20,3 @@ func (p *setPresenter) Success(id vo.Id) {
 	bytes, _ := json.Marshal(res)
 	fmt.Fprint(p.w, string(bytes))
 }
-
-func (p *setPresenter) Error(s string) {
-	ShowError(p.w, s, 500)
-}

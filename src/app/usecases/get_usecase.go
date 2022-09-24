@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"api_stub/dtos"
+	"api_stub/exceptions"
 	"api_stub/outputs"
 	"api_stub/repositories"
 	"github.com/go-redis/redis/v9"
@@ -23,7 +24,7 @@ func (uc *GetUsecase) Handle(dto dtos.QueryDto) error {
 	m, err := repo.Pop(id)
 
 	if err == redis.Nil {
-		uc.out.Error("no data stored.")
+		return exceptions.NewDataException("no data stored.")
 	} else if err != nil {
 		return err
 	}

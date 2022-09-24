@@ -16,7 +16,3 @@ func NewGetPresenter(w http.ResponseWriter) *getPresenter {
 func (p *getPresenter) Success(j string) {
 	fmt.Fprint(p.w, j)
 }
-
-func (p *getPresenter) Error(s string) {
-	ShowError(p.w, s, 500)
-}

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"api_stub/exceptions"
 	"encoding/json"
 	"errors"
 	"github.com/go-redis/redis/v9"
@@ -36,7 +37,27 @@ func InitRedis(h string, p int, pw string, dbId int) *redis.Client {
 	return redis
 }
 
-func ShowError(w http.ResponseWriter, m string, c int) {
+func ShowError(w http.ResponseWriter, err error) {
+	m := err.Error()
+
+	var c int
+	switch err.(type) {
+	case *exceptions.ValidationException:
+		c = 400
+		break
+	case *exceptions.AuthException:
+		c = 403
+		break
+	case *exceptions.RoutingException:
+		c = 404
+		break
+	case *exceptions.DataException:
+		c = 409
+		break
+	default:
+		c = 500
+	}
+
 	e := map[string]string{
 		"error": m,
 	}

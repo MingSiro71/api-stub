@@ -6,5 +6,4 @@ import (
 
 type SetOutput interface {
 	Success(vo.Id)
-	Error(string)
 }
