@@ -25,3 +25,8 @@ func (repo *redisMessageRepository) Pop(id vo.Id) (string, error) {
 	val, err := repo.db.LPop(repo.ctx, id.Tos()).Result()
 	return string(val), err
 }
+
+func (repo *redisMessageRepository) List(id vo.Id) ([]string, error) {
+	vals, err := repo.db.LRange(repo.ctx, id.Tos(), 0, RangeMax).Result()
+	return vals, err
+}

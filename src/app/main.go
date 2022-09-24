@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "os"
 	"api_stub/controllers"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -13,7 +12,7 @@ func main() {
 
 	router.HandleFunc("/set/{id}", controller.Set).Methods("POST")
 	router.HandleFunc("/get/{id}", controller.Get)
-	// router.HandleFunc("/list/{id}", controller.List).Methods("GET")
+	router.HandleFunc("/list/{id}", controller.List).Methods("GET")
 	// router.HandleFunc("/clear/{id}", controller.Clear).Methods("PUT")
 	// router.HandleFunc("/init", controller.Init).Methods("PUT")
 	router.HandleFunc("/", controller.Help).Methods("GET")

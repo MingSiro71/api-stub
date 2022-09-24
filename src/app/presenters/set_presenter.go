@@ -7,15 +7,15 @@ import (
 	"net/http"
 )
 
-type registerPresenter struct {
+type setPresenter struct {
 	w http.ResponseWriter
 }
 
-func NewRegisterPresenter(w http.ResponseWriter) *registerPresenter {
-	return &registerPresenter{w: w}
+func NewSetPresenter(w http.ResponseWriter) *setPresenter {
+	return &setPresenter{w: w}
 }
 
-func (p *registerPresenter) Success(id vo.Id) {
+func (p *setPresenter) Success(id vo.Id) {
 	res := make(map[string]string, 1)
 	res["id"] = id.Tos()
 
@@ -23,6 +23,6 @@ func (p *registerPresenter) Success(id vo.Id) {
 	fmt.Fprint(p.w, string(bytes))
 }
 
-func (p *registerPresenter) Error(s string) {
+func (p *setPresenter) Error(s string) {
 	ShowError(p.w, s)
 }

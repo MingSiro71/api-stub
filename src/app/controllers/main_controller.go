@@ -18,7 +18,7 @@ type MainController interface {
 	Help(http.ResponseWriter, *http.Request)
 	Set(http.ResponseWriter, *http.Request)
 	Get(http.ResponseWriter, *http.Request)
-	// List(http.ResponseWriter, *http.Request)
+	List(http.ResponseWriter, *http.Request)
 	// Clear(http.ResponseWriter, *http.Request)
 	// Init(http.ResponseWriter, *http.Request)
 }
@@ -42,7 +42,7 @@ func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
 		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
 	}
 
-	var out outputs.SetOutput = presenters.NewRegisterPresenter(w)
+	var out outputs.SetOutput = presenters.NewSetPresenter(w)
 	var in inputs.SetInput = usecases.NewSetUsecase(repos, out)
 
 	b, err := ioutil.ReadAll(r.Body)
@@ -59,7 +59,6 @@ func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
 	params["data"] = string(b)
 
 	dto, err := dtos.NewSetDto(params)
-
 	if err != nil {
 		ShowError(w, err.Error())
 		return
@@ -82,6 +81,11 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 	var in inputs.GetInput = usecases.NewGetUsecase(repos, out)
 
 	params, err := InitParam(r)
+	if err != nil {
+		ShowError(w, err.Error())
+		return
+	}
+
 	dto, err := dtos.NewQueryDto(params)
 	if err != nil {
 		ShowError(w, err.Error())
@@ -94,29 +98,47 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// func (mc *mainController) List(w http.ResponseWriter, r *http.Request) {
-// 	var out ListOutput
-// 	out = NewListPresenter(w)
+func (mc *mainController) List(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
+	repos := map[string]interface{}{
+		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
+	}
 
-// 	var in ListInput
-// 	in = NewMainUsecase(out)
+	var out outputs.ListOutput = presenters.NewListPresenter(w)
+	var in inputs.ListInput = usecases.NewListUsecase(repos, out)
 
-// 	dto, err := NewListDto(params)
-// 	if err != nil {
-// 		w.write("parameters not validated")
-// 	}
+	params, err := InitParam(r)
+	if err != nil {
+		ShowError(w, err.Error())
+		return
+	}
 
-// 	in.List(dto)
-// }
+	dto, err := dtos.NewQueryDto(params)
+	if err != nil {
+		ShowError(w, err.Error())
+		return
+	}
+
+	err = in.Handle(dto)
+	if err != nil {
+		ShowError(w, "internal server error.")
+		return
+	}
+}
 
 // func (mc *mainController) Clear(w http.ResponseWriter, r *http.Request) {
-// 	var out ClearOutput
-// 	out = NewClearPresenter(w)
+// 	ctx := context.Background()
+// 	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
+// 	repos := map[string]interface{}{
+// 		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
+// 	}
 
-// 	var in ClearInput
-// 	in = NewMainUsecase(out)
+// 	var out outputs.ClearOutput = presenters.NewClearPresenter(w)
 
-// 	dto, err := NewClearDto(params)
+// 	var in inputs.ClearInput = usecases.NewMainUsecase(out)
+
+// 	dto, err := dtos.NewClearDto(params)
 // 	if err != nil {
 // 		w.write("parameters not validated")
 // 	}
@@ -126,7 +148,7 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 
 // func (mc *mainController) Init(w http.ResponseWriter, r *http.Request) {
 // 	var out InitOutput
-// 	out = NewRegisterPresenter(w)
+// 	out = NewSetPresenter(w)
 
 // 	var in InitInput
 // 	in = NewMainUsecase(out)
