@@ -30,3 +30,8 @@ func (repo *redisMessageRepository) List(id vo.Id) ([]string, error) {
 	vals, err := repo.db.LRange(repo.ctx, id.Tos(), 0, RangeMax).Result()
 	return vals, err
 }
+
+func (repo *redisMessageRepository) Clear(id vo.Id) (error) {
+	_, err := repo.db.Del(repo.ctx, id.Tos()).Result()
+	return err
+}

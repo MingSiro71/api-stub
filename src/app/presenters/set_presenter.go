@@ -16,9 +16,7 @@ func NewSetPresenter(w http.ResponseWriter) *setPresenter {
 }
 
 func (p *setPresenter) Success(id vo.Id) {
-	res := make(map[string]string, 1)
-	res["id"] = id.Tos()
-
+	res := map[string]string{"id": id.Tos()}
 	bytes, _ := json.Marshal(res)
 	fmt.Fprint(p.w, string(bytes))
 }

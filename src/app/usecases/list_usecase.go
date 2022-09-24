@@ -25,6 +25,6 @@ func (uc *ListUsecase) Handle(dto dtos.QueryDto) error {
 		return err
 	}
 
-	uc.out.Success(l)
+	uc.out.Success(id, l)
 	return nil
 }

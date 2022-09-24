@@ -19,7 +19,7 @@ type MainController interface {
 	Set(http.ResponseWriter, *http.Request)
 	Get(http.ResponseWriter, *http.Request)
 	List(http.ResponseWriter, *http.Request)
-	// Clear(http.ResponseWriter, *http.Request)
+	Clear(http.ResponseWriter, *http.Request)
 	// Init(http.ResponseWriter, *http.Request)
 }
 
@@ -127,24 +127,34 @@ func (mc *mainController) List(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// func (mc *mainController) Clear(w http.ResponseWriter, r *http.Request) {
-// 	ctx := context.Background()
-// 	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
-// 	repos := map[string]interface{}{
-// 		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
-// 	}
+func (mc *mainController) Clear(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
+	repos := map[string]interface{}{
+		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
+	}
 
-// 	var out outputs.ClearOutput = presenters.NewClearPresenter(w)
+	var out outputs.ClearOutput = presenters.NewClearPresenter(w)
+	var in inputs.ClearInput = usecases.NewClearUsecase(repos, out)
 
-// 	var in inputs.ClearInput = usecases.NewMainUsecase(out)
+	params, err := InitParam(r)
+	if err != nil {
+		ShowError(w, err.Error())
+		return
+	}
 
-// 	dto, err := dtos.NewClearDto(params)
-// 	if err != nil {
-// 		w.write("parameters not validated")
-// 	}
+	dto, err := dtos.NewQueryDto(params)
+	if err != nil {
+		ShowError(w, err.Error())
+		return
+	}
 
-// 	in.Clear(dto)
-// }
+	err = in.Handle(dto)
+	if err != nil {
+		ShowError(w, "internal server error.")
+		return
+	}
+}
 
 // func (mc *mainController) Init(w http.ResponseWriter, r *http.Request) {
 // 	var out InitOutput
