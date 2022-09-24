@@ -29,5 +29,5 @@ func (p *listPresenter) Success(id vo.Id, l []string) {
 }
 
 func (p *listPresenter) Error(s string) {
-	ShowError(p.w, s)
+	ShowError(p.w, s, 500)
 }

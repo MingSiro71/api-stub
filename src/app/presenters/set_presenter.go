@@ -22,5 +22,5 @@ func (p *setPresenter) Success(id vo.Id) {
 }
 
 func (p *setPresenter) Error(s string) {
-	ShowError(p.w, s)
+	ShowError(p.w, s, 500)
 }

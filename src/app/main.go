@@ -14,7 +14,8 @@ func main() {
 	router.HandleFunc("/get/{id}", controller.Get)
 	router.HandleFunc("/list/{id}", controller.List).Methods("GET")
 	router.HandleFunc("/clear/{id}", controller.Clear).Methods("PUT")
-	// router.HandleFunc("/init", controller.Init).Methods("PUT")
+	router.HandleFunc("/init", controller.Init).Methods("PUT")
+
 	router.HandleFunc("/", controller.Help).Methods("GET")
 
 	// register router

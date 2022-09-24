@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/go-redis/redis/v9"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -37,12 +36,10 @@ func InitRedis(h string, p int, pw string, dbId int) *redis.Client {
 	return redis
 }
 
-func ShowError(w http.ResponseWriter, m string) {
+func ShowError(w http.ResponseWriter, m string, c int) {
 	e := map[string]string{
 		"error": m,
 	}
 	bytes, _ := json.Marshal(e)
-	j := string(bytes)
-
-	fmt.Fprint(w, j)
+	http.Error(w, string(bytes), c)
 }

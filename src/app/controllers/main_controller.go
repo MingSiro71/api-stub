@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"api_stub/controllers/http_middlewares"
 	"api_stub/dtos"
 	"api_stub/env"
 	"api_stub/inputs"
@@ -20,14 +21,15 @@ type MainController interface {
 	Get(http.ResponseWriter, *http.Request)
 	List(http.ResponseWriter, *http.Request)
 	Clear(http.ResponseWriter, *http.Request)
-	// Init(http.ResponseWriter, *http.Request)
+	Init(http.ResponseWriter, *http.Request)
 }
 
 type mainController struct {
+	a http_middlewares.Auth
 }
 
 func NewMainController() (m *mainController) {
-	return &mainController{}
+	return &mainController{a: http_middlewares.NewAuth()}
 }
 
 func (mc *mainController) Help(w http.ResponseWriter, r *http.Request) {
@@ -47,26 +49,26 @@ func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
 
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		ShowError(w, "parameters not validated.")
+		ShowError(w, "parameters not validated.", 400)
 		return
 	}
 
 	params, err := InitParam(r)
 	if err != nil {
-		ShowError(w, "invalid url.")
+		ShowError(w, "not found.", 404)
 		return
 	}
 	params["data"] = string(b)
 
 	dto, err := dtos.NewSetDto(params)
 	if err != nil {
-		ShowError(w, err.Error())
+		ShowError(w, err.Error(), 400)
 		return
 	}
 
 	err = in.Handle(dto)
 	if err != nil {
-		ShowError(w, "internal server error.")
+		ShowError(w, "internal server error.", 500)
 	}
 }
 
@@ -82,19 +84,19 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 
 	params, err := InitParam(r)
 	if err != nil {
-		ShowError(w, err.Error())
+		ShowError(w, "not found.", 404)
 		return
 	}
 
 	dto, err := dtos.NewQueryDto(params)
 	if err != nil {
-		ShowError(w, err.Error())
+		ShowError(w, err.Error(), 400)
 		return
 	}
 
 	err = in.Handle(dto)
 	if err != nil {
-		ShowError(w, "internal server error.")
+		ShowError(w, "internal server error.", 500)
 	}
 }
 
@@ -110,19 +112,19 @@ func (mc *mainController) List(w http.ResponseWriter, r *http.Request) {
 
 	params, err := InitParam(r)
 	if err != nil {
-		ShowError(w, err.Error())
+		ShowError(w, "not found.", 404)
 		return
 	}
 
 	dto, err := dtos.NewQueryDto(params)
 	if err != nil {
-		ShowError(w, err.Error())
+		ShowError(w, err.Error(), 400)
 		return
 	}
 
 	err = in.Handle(dto)
 	if err != nil {
-		ShowError(w, "internal server error.")
+		ShowError(w, "internal server error.", 500)
 		return
 	}
 }
@@ -139,32 +141,40 @@ func (mc *mainController) Clear(w http.ResponseWriter, r *http.Request) {
 
 	params, err := InitParam(r)
 	if err != nil {
-		ShowError(w, err.Error())
+		ShowError(w, "not found.", 404)
 		return
 	}
 
 	dto, err := dtos.NewQueryDto(params)
 	if err != nil {
-		ShowError(w, err.Error())
+		ShowError(w, err.Error(), 400)
 		return
 	}
 
 	err = in.Handle(dto)
 	if err != nil {
-		ShowError(w, "internal server error.")
+		ShowError(w, "internal server error.", 500)
 		return
 	}
 }
 
-// func (mc *mainController) Init(w http.ResponseWriter, r *http.Request) {
-// 	var out InitOutput
-// 	out = NewSetPresenter(w)
+func (mc *mainController) Init(w http.ResponseWriter, r *http.Request) {
+	if mc.a.IsAdmin(r) == false {
+		ShowError(w, "not allowed for you.", 403)
+		return
+	}
+	ctx := context.Background()
+	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
+	repos := map[string]interface{}{
+		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
+	}
 
-// 	var in InitInput
-// 	in = NewMainUsecase(out)
+	var out outputs.InitOutput = presenters.NewInitPresenter(w)
+	var in inputs.InitInput = usecases.NewInitUsecase(repos, out)
 
-// 	dto, err := NewInitrDto()
-// 	// No paramater and validation
-
-// 	in.Init(dto)
-// }
+	err := in.Handle()
+	if err != nil {
+		ShowError(w, "internal server error.", 500)
+		return
+	}
+}

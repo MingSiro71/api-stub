@@ -4,6 +4,7 @@ import (
 	"api_stub/repositories"
 	"api_stub/vo"
 	"context"
+	"fmt"
 	"github.com/go-redis/redis/v9"
 )
 
@@ -31,7 +32,36 @@ func (repo *redisMessageRepository) List(id vo.Id) ([]string, error) {
 	return vals, err
 }
 
-func (repo *redisMessageRepository) Clear(id vo.Id) (error) {
+func (repo *redisMessageRepository) Clear(id vo.Id) error {
 	_, err := repo.db.Del(repo.ctx, id.Tos()).Result()
 	return err
+}
+
+func (repo *redisMessageRepository) Init() error {
+	var cursor uint64
+	var err error
+	ids := make([]string, 0)
+	for {
+		keys := make([]string, 0)
+		keys, cursor, err = repo.db.Scan(repo.ctx, cursor, "*", 10).Result()
+
+		if err != nil {
+			return err
+		}
+
+		ids = append(ids, keys...)
+
+		if cursor == 0 {
+			break
+		}
+	}
+
+	for _, id := range ids {
+		_, err := repo.db.Del(repo.ctx, id).Result()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

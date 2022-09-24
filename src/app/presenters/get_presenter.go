@@ -18,5 +18,5 @@ func (p *getPresenter) Success(j string) {
 }
 
 func (p *getPresenter) Error(s string) {
-	ShowError(p.w, s)
+	ShowError(p.w, s, 500)
 }

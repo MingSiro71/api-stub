@@ -22,5 +22,5 @@ func (p *clearPresenter) Success(id vo.Id, n int) {
 }
 
 func (p *clearPresenter) Error(s string) {
-	ShowError(p.w, s)
+	ShowError(p.w, s, 500)
 }
