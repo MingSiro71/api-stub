@@ -1,0 +1,8 @@
+package env
+
+const RedisHost = ""
+const RedisPort = 0
+const RedisPassword = ""
+const RedisDB = 0
+
+const AdminKey = ""
