@@ -4,7 +4,6 @@ import (
 	"api_stub/repositories"
 	"api_stub/vo"
 	"context"
-	"fmt"
 	"github.com/go-redis/redis/v9"
 )
 
