@@ -4,7 +4,6 @@ services:
     build: ./infra/server
     ports:
       - "8080:80"
-    # command: "/app/server || exit 0"
     tty: true
   golang:
     build: ./infra/golang
@@ -13,6 +12,8 @@ services:
       - "./src/app:/go/src"
     ports:
       - "3080:80"
+    environment:
+      - APPROOT=/go/src
     tty: true
   redis:
     build: ./infra/redis

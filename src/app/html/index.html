@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>help of api-stub</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@2.1.0/build/pure-min.css"
+        integrity="sha384-yHIFVG6ClnONEA5yB5DJXfW2/KC173DIQrYoZMEtBvGzmf0PKiGyNEqe9N6BNDBH" crossorigin="anonymous">
+    <link rel="stylesheet" href="./static/css/style.css">
+</head>
+
+<body>
+    <div class="jumbotron">
+        <h1>api-stub</h1>
+    </div>
+
+    <main class="contents-wrap pure-u-11-12">
+        <section class="contents">
+            <h2>API疎通モジュールの試作時に</h2>
+            <p>api-stubは開発時のスタブレスポンスの利用を目的としたAPIです。レスポンス内容を Set API でキューイングし、プログラムから Get API
+            にアクセスしてキューの先頭からレスポンスを受け取ることができます。</p>
+            <p>ログイン不要で、URLに任意のIDをセットすることで専用のキューが利用できます。</p>
+            <p>なお、IDが他のユーザと重複した場合に影響を防ぐ機能はなく、また、高頻度のアクセスに対してはサービスの提供を保証しません。自己責任での簡易のスタブ利用を対象としていますのでご了承ください。</p>
+        </section>
+
+        <section class="contents">
+            <h2>試してみる</h2>
+            <p>まずはSetAPIでデータを投入してみましょう。IDは"com.{YOUR COMPANY}@{YOUR NAME}"の形式を推奨しますが、6文字以上256文字以内であれば何でも構いません。</p>
+            <pre class="input-code"><code>POST https://api-stub.hentech.work/set/{YOUR ID}
+Body: {"message": "this is test mesage I queued first."}</code></pre>
+            <pre class="output-code"><code>{
+    "id": "{YOUR ID}"
+}</code></pre>
+            <pre class="input-code"><code>POST https://api-stub.hentech.work/set/{YOUR ID}
+Body: {"message": "this is test mesage I queued second."}</code></pre>
+            <pre class="output-code"><code>{
+    "id": "{YOUR ID}"
+}</code></pre>
+            <p>リクエストボディに記述したJSON文字列がキューに格納されたかどうかは、 List API で確認できます。</p>
+            <pre class="input-code"><code>Get https://api-stub.hentech.work/List/{YOUR ID}</code></pre>
+            <pre class="output-code"><code>{
+    "id":"{YOUR ID}",
+    "messages":[
+        {
+            "message":"this is test mesage I queued first."
+        },
+        {
+            "message":"this is test mesage I queued second."
+        }
+    ]
+}</code></pre>
+            <p>投入したレスポンスを Get API で受け取りましょう。</p>
+            <pre class="input-code"><code>Get https://api-stub.hentech.work/List/{YOUR ID}</code></pre>
+            <pre class="output-code"><code>{
+    "message":"this is test mesage I queued first."
+}</code></pre>
+            <p>今回は Get API へGETでリクエストしましたが、POST, PUT, DELETEでもGETと同じように動作し、キューからレスポンスを返します。 Clear API で利用後はキューを空にしてください。
+            </p>
+            <pre class="input-code"><code>PUT https://api-stub.hentech.work/Clear/{YOUR ID}</code></pre>
+            <pre class="output-code"><code>{
+    "id": "{YOUR ID}"
+}</code></pre>
+        </section>
+
+        <section class="contents">
+            <h2>各APIの仕様</h2>
+            <h3>Set</h3>
+            <dl>
+                <div class="list-item">
+                    <dt>PATH</dt>
+                    <dd>/set/{YOUR ID}</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Method</dt>
+                    <dd>POST</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Body</dt>
+                    <dd>必須、空の場合は空文字として取り扱う。文字列でなければならない。</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Response</dt>
+                    <dd>URLで設定したidをidキーに持つJSON文字列</dd>
+                </div>
+            </dl>
+            <h3>Get</h3>
+            <dl>
+                <div class="list-item">
+                    <dt>PATH</dt>
+                    <dd>/get/{YOUR ID}</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Method</dt>
+                    <dd>GET, POST, PUT, DELETEのいずれか</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Body</dt>
+                    <dd>使用しない。</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Response</dt>
+                    <dd>Set API によりキューイングされた先頭のメッセージ</dd>
+                </div>
+            </dl>
+            <h3>List</h3>
+            <dl>
+                <div class="list-item">
+                    <dt>PATH</dt>
+                    <dd>/list/{YOUR ID}</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Method</dt>
+                    <dd>Get</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Body</dt>
+                    <dd>使用しない。</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Response</dt>
+                    <dd>URLで設定したidをidキー、キューのメッセージ配列をmessagesキーに持つJSON配列</dd>
+                </div>
+            </dl>
+            <h3>Clear</h3>
+            <dl>
+                <div class="list-item">
+                    <dt>PATH</dt>
+                    <dd>/clear/{YOUR ID}</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Method</dt>
+                    <dd>PUT</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Body</dt>
+                    <dd>使用しない。</dd>
+                </div>
+                <div class="list-item">
+                    <dt>Response</dt>
+                    <dd>URLで設定したidをidキー、キューに残っていた件数をdeletesに持つJSON文字列</dd>
+                </div>
+            </dl>
+        </section>
+    </main>
+</body>
+
+</html>

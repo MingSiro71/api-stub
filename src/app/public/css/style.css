@@ -1,0 +1,64 @@
+/* 
+ * Tags
+ */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.8rem;
+    background-color: #25292f;
+}
+
+p {
+    color: #25292f;
+}
+
+pre {
+    padding: 1em;
+    border-radius: 3px;
+    color: #fff;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+code {
+    background: #25292f;
+}
+
+/* 
+ * Common components 
+ */
+.jumbotron {
+    font-size: 4rem;
+    color: aliceblue;
+}
+
+.contents-wrap {
+    max-width: 800px;
+}
+
+.contents {
+    background-color: #fff;
+    padding: 1.5rem;
+}
+
+.contents + .contents {
+    margin-top: 2rem;
+}
+
+pre.input-code {
+    background: #2f2825;
+}
+
+pre.output-code {
+    background: #252f2d;
+}
+
+.list-item {
+    display: flex;
+    flex-direction: row;
+}
+
+.list-item dt, .list-item dd {
+    display: inline-block;
+}

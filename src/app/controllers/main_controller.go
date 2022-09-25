@@ -33,11 +33,6 @@ func NewMainController() (m *mainController) {
 	return &mainController{a: http_middlewares.NewAuth()}
 }
 
-func (mc *mainController) Help(w http.ResponseWriter, r *http.Request) {
-	out := presenters.NewHelpPresenter(w)
-	out.Success()
-}
-
 func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)

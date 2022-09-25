@@ -1,1 +1,5 @@
+cd $(dirname $0)
+rm -rf ../build/*
 go build -o ../build/server main.go
+cp -a html ../build
+cp -a public ../build
