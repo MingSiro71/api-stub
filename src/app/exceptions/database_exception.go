@@ -4,7 +4,7 @@ type DatabaseException struct {
 	msg string
 }
 
-const DatabaseExceptionDefault = "Internal server Exception."
+const DatabaseExceptionDefault = "Internal server error."
 
 func NewDatabaseException(m string) *DatabaseException {
 	return &DatabaseException{msg: m}

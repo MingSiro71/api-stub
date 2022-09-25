@@ -26,6 +26,13 @@ func (repo *redisMessageRepository) Push(id vo.Id, s string) error {
 }
 
 func (repo *redisMessageRepository) Pop(id vo.Id) (string, error) {
+	len, err := repo.db.LLen(repo.ctx, id.Tos()).Result()
+	if len == 0 && err == nil {
+		return "", exceptions.NewDataException("no data stored.")
+	} else if err != nil {
+		return "", exceptions.NewDatabaseException(exceptions.DatabaseExceptionDefault)
+	}
+
 	val, err := repo.db.LPop(repo.ctx, id.Tos()).Result()
 	if err != nil {
 		return "", exceptions.NewDatabaseException(exceptions.DatabaseExceptionDefault)

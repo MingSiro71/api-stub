@@ -2,10 +2,8 @@ package usecases
 
 import (
 	"api_stub/dtos"
-	"api_stub/exceptions"
 	"api_stub/outputs"
 	"api_stub/repositories"
-	"github.com/go-redis/redis/v9"
 )
 
 type GetUsecase struct {
@@ -23,9 +21,7 @@ func (uc *GetUsecase) Handle(dto dtos.QueryDto) error {
 	repo := uc.repos[repositories.Message].(repositories.MessageRepository)
 	m, err := repo.Pop(id)
 
-	if err == redis.Nil {
-		return exceptions.NewDataException("no data stored.")
-	} else if err != nil {
+	if err != nil {
 		return err
 	}
 

@@ -4,7 +4,7 @@ type LogicalException struct {
 	msg string
 }
 
-const LogicalExceptionDefault = "Internal server Exception."
+const LogicalExceptionDefault = "Internal server error."
 
 func NewLogicalException(m string) *LogicalException {
 	return &LogicalException{msg: m}
