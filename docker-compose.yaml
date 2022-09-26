@@ -4,6 +4,8 @@ services:
     build: ./infra/server
     ports:
       - "8080:80"
+    env_file:
+      - "./.env.dev"
     tty: true
   golang:
     build: ./infra/golang
@@ -14,6 +16,8 @@ services:
       - "3080:80"
     environment:
       - APPROOT=/go/src
+    env_file:
+      - "./.env.dev"
     tty: true
   redis:
     build: ./infra/redis

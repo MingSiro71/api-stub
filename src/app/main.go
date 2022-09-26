@@ -2,6 +2,7 @@ package main
 
 import (
 	"api_stub/controllers"
+	"context"
 	"github.com/gorilla/mux"
 	"net/http"
 	"os"
@@ -10,8 +11,12 @@ import (
 
 func main() {
 	router := mux.NewRouter()
-	controller := controllers.NewMainController()
-	
+	ctx := context.Background()
+	controller, err := controllers.NewMainController(ctx)
+	if err != nil {
+		panic(err)
+	}
+
 	htmlPath := filepath.Join(os.Getenv("APPROOT"), "html");
 	publicPath := filepath.Join(os.Getenv("APPROOT"), "public");
 
@@ -28,9 +33,6 @@ func main() {
 	// register router
 	http.Handle("/", router)
 
-	// start server with reverse proxy
-	// http.ListenAndServe("localhost:8080", nil)
-	//
 	// start standalone server, expose 80
 	http.ListenAndServe(":80", nil)
 }

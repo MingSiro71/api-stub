@@ -3,7 +3,6 @@ package controllers
 import (
 	"api_stub/controllers/http_middlewares"
 	"api_stub/dtos"
-	"api_stub/env"
 	"api_stub/exceptions"
 	"api_stub/inputs"
 	"api_stub/outputs"
@@ -12,8 +11,11 @@ import (
 	"api_stub/repositories"
 	"api_stub/usecases"
 	"context"
+	"github.com/go-redis/redis/v9"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 type MainController interface {
@@ -27,17 +29,28 @@ type MainController interface {
 
 type mainController struct {
 	a http_middlewares.Auth
+	ctx context.Context
+	r *redis.Client
 }
 
-func NewMainController() (m *mainController) {
-	return &mainController{a: http_middlewares.NewAuth()}
+func NewMainController(ctx context.Context) (*mainController, error) {
+	rh := os.Getenv("REDIS_HOST")
+	rp, err := strconv.Atoi(os.Getenv("REDIS_PORT"))
+	if err != nil {
+		return nil, exceptions.NewLogicalException("environment REDIS_PORT is invalid.")
+	}
+	rwp := os.Getenv("REDIS_PASSWORD")
+	rd, err := strconv.Atoi(os.Getenv("REDIS_DB"))
+	if err != nil {
+		return nil, exceptions.NewLogicalException("environment REDIS_DB is invalid.")
+	}
+
+	return &mainController{a: http_middlewares.NewAuth(), ctx: ctx, r: InitRedis(rh, rp, rwp, rd)}, nil
 }
 
 func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
-	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
 	repos := map[string]interface{}{
-		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
+		repositories.Message: redis_repositories.NewRedisMessageRepository(mc.ctx, mc.r),
 	}
 
 	var out outputs.SetOutput = presenters.NewSetPresenter(w)
@@ -69,10 +82,8 @@ func (mc *mainController) Set(w http.ResponseWriter, r *http.Request) {
 }
 
 func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
-	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
 	repos := map[string]interface{}{
-		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
+		repositories.Message: redis_repositories.NewRedisMessageRepository(mc.ctx, mc.r),
 	}
 
 	var out outputs.GetOutput = presenters.NewGetPresenter(w)
@@ -97,10 +108,8 @@ func (mc *mainController) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (mc *mainController) List(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
-	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
 	repos := map[string]interface{}{
-		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
+		repositories.Message: redis_repositories.NewRedisMessageRepository(mc.ctx, mc.r),
 	}
 
 	var out outputs.ListOutput = presenters.NewListPresenter(w)
@@ -125,10 +134,8 @@ func (mc *mainController) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (mc *mainController) Clear(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
-	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
 	repos := map[string]interface{}{
-		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
+		repositories.Message: redis_repositories.NewRedisMessageRepository(mc.ctx, mc.r),
 	}
 
 	var out outputs.ClearOutput = presenters.NewClearPresenter(w)
@@ -157,10 +164,8 @@ func (mc *mainController) Init(w http.ResponseWriter, r *http.Request) {
 		ShowError(w, exceptions.NewAuthException(exceptions.AuthExceptionDefault))
 		return
 	}
-	ctx := context.Background()
-	redis := InitRedis(env.RedisHost, env.RedisPort, env.RedisPassword, env.RedisDB)
 	repos := map[string]interface{}{
-		repositories.Message: redis_repositories.NewRedisMessageRepository(ctx, redis),
+		repositories.Message: redis_repositories.NewRedisMessageRepository(mc.ctx, mc.r),
 	}
 
 	var out outputs.InitOutput = presenters.NewInitPresenter(w)

@@ -1,8 +1,8 @@
 package http_middlewares
 
 import (
-	"api_stub/env"
 	"net/http"
+	"os"
 )
 
 const adminKeyHeader = "X-Admin-Key"
@@ -19,7 +19,7 @@ func NewAuth() *auth {
 }
 
 func (a *auth) IsAdmin(r *http.Request) bool {
-	if r.Header[adminKeyHeader][0] == string(env.AdminKey) {
+	if r.Header[adminKeyHeader][0] == string(os.Getenv("ADMIN_KEY")) {
 		return true
 	}
 	return false
