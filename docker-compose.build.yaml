@@ -3,13 +3,3 @@ services:
   server:
     container_name: api-stub
     build: ./infra/server
-    ports:
-      - "8080:80"
-    env_file:
-      - "./.env.prd"
-    tty: true
-  redis:
-    container_name: api-stub-redis
-    build: ./infra/redis
-    expose:
-      - "6379"
